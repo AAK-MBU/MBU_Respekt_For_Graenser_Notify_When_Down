@@ -7,7 +7,7 @@ from urllib.parse import quote_plus
 from sqlalchemy import create_engine, text
 
 
-def get_forms(logger: logging.Logger) -> dict | None:
+def get_forms(logger: logging.Logger) -> list[dict] | None:
     """Fetch forms with status 'Failed' from the journalizing database."""
     logger.info("Fetching forms with status 'InProgress' from the database.")
 
@@ -31,7 +31,7 @@ def get_forms(logger: logging.Logger) -> dict | None:
 
         logger.info("Found %d forms.", len(rows))
 
-        return [dict(row._mapping) for row in rows]
+        return [dict(row) for row in rows]
 
     except Exception as e:
         logger.error("Error fetching forms from database: %s", e)
