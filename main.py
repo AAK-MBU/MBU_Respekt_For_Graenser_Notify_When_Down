@@ -103,13 +103,7 @@ async def finalize(workqueue: Workqueue):
 
 
 if __name__ == "__main__":
-
-    logging.basicConfig(
-        level=logging.INFO,
-        # format='[%(levelname)s] %(name)s: %(message)s',
-        # handlers=[logging.StreamHandler(sys.stdout)],
-    )
-    # logging.getLogger().setLevel(logging.INFO)
+    ats_functions.init_logger()
 
     ats = AutomationServer.from_environment()
 

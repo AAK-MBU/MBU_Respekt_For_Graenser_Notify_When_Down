@@ -1,6 +1,9 @@
 """Helper module to call some functionality in Automation Server using the API"""
 
+import json
+import logging
 import os
+import sys
 
 import requests
 from automation_server_client import WorkItem, Workqueue
@@ -49,3 +52,40 @@ def get_workqueue_items(workqueue: Workqueue):
 def get_item_info(item: WorkItem):
     """Unpack item"""
     return item.data["item"]["data"], item.data["item"]["reference"]
+
+
+class JsonFormatter(logging.Formatter):
+    """Custom JSON formatter for logging."""
+    def format(self, record: logging.LogRecord) -> str:
+        """
+        Format log record as JSON.
+
+        args:
+            record (logging.LogRecord): The log record to format.
+        returns:
+            str: The formatted log record as a JSON string.
+        """
+        data = {
+            "ts": self.formatTime(record, "%Y-%m-%dT%H:%M:%S%z"),
+            "level": record.levelname,
+            "logger": record.name,
+            "module": record.module,
+            "func": record.funcName,
+            "line": record.lineno,
+            "msg": record.getMessage(),
+        }
+        std = set(vars(logging.makeLogRecord({})).keys()) | {"message", "asctime"}
+        extras = {k:v for k,v in record.__dict__.items() if k not in std and not k.startswith("_")}
+        if extras:
+            data["extra"] = extras
+        return json.dumps(data, ensure_ascii=False)
+
+
+def init_logger():
+    """Initialize the root logger with JSON formatting."""
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setFormatter(JsonFormatter())
+
+    root = logging.getLogger()
+    root.setLevel(logging.INFO)
+    root.handlers = [handler]
