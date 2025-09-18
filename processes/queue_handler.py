@@ -66,10 +66,7 @@ async def concurrent_add(
         async with sem:
             for attempt in range(1, config.MAX_RETRIES + 1):
                 try:
-                    work_item = await asyncio.to_thread(
-                        workqueue.add_item, data, reference
-                    )
-                    logger.info(f"Added item to queue: {work_item}")
+                    await asyncio.to_thread(workqueue.add_item, data, reference)
                     return True
                 except Exception as e:
                     if attempt >= config.MAX_RETRIES:
