@@ -3,7 +3,6 @@
 import json
 import logging
 import os
-import sys
 
 import requests
 from automation_server_client import WorkItem, Workqueue
