@@ -56,6 +56,7 @@ def get_item_info(item: WorkItem):
 
 class JsonFormatter(logging.Formatter):
     """Custom JSON formatter for logging."""
+
     def format(self, record: logging.LogRecord) -> str:
         """
         Format log record as JSON.
@@ -75,7 +76,11 @@ class JsonFormatter(logging.Formatter):
             "msg": record.getMessage(),
         }
         std = set(vars(logging.makeLogRecord({})).keys()) | {"message", "asctime"}
-        extras = {k:v for k,v in record.__dict__.items() if k not in std and not k.startswith("_")}
+        extras = {
+            k: v
+            for k, v in record.__dict__.items()
+            if k not in std and not k.startswith("_")
+        }
         if extras:
             data["extra"] = extras
         return json.dumps(data, ensure_ascii=False)
