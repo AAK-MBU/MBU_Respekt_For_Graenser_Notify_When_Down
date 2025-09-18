@@ -104,10 +104,18 @@ async def finalize(workqueue: Workqueue):
 
 if __name__ == "__main__":
 
+    logging.basicConfig(
+        level=logging.INFO,
+        format='[%(levelname)s] %(name)s: %(message)s',
+        handlers=[logging.StreamHandler(sys.stdout)],
+    )
+    logging.getLogger().setLevel(logging.INFO)
+
     ats = AutomationServer.from_environment()
 
     prod_workqueue = ats.workqueue()
     process = ats.process
+    session = ats.session
 
     if "--queue" in sys.argv:
         asyncio.run(populate_queue(prod_workqueue))
