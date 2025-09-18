@@ -20,7 +20,7 @@ def get_workqueue_items(workqueue: Workqueue):
     token = os.getenv("ATS_TOKEN")
 
     if not url or not token:
-        raise EnvironmentError("ATS_URL or ATS_TOKEN is not set in the environment")
+        raise OSError("ATS_URL or ATS_TOKEN is not set in the environment")
 
     headers = {"Authorization": f"Bearer {token}"}
 

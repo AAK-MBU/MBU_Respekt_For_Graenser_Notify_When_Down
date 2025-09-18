@@ -1,14 +1,13 @@
 """Module to hande queue population"""
 
 import asyncio
-import logging
 import json
+import logging
 
 from automation_server_client import Workqueue
 
-from processes.subprocesses.get_forms import get_forms
-
 from helpers import config
+from processes.subprocesses.get_forms import get_forms
 
 
 def retrieve_items_for_queue(logger: logging.Logger) -> list[dict]:
@@ -26,18 +25,16 @@ def retrieve_items_for_queue(logger: logging.Logger) -> list[dict]:
         form_id = form.get("form_id")
         try:
             form_data = json.loads(form.get("form_data", "{}"))
-            attachment_url = (
-                form_data["data"]["attachments"]["respekt_for"]["url"]
-            )
+            attachment_url = form_data["data"]["attachments"]["respekt_for"]["url"]
             references.append(form_id)
-            data.append({
-                "attachment_url": attachment_url
-            })
+            data.append({"attachment_url": attachment_url})
         except (json.JSONDecodeError, KeyError, TypeError) as e:
             logger.warning(f"Error parsing form data for form_id {form_id}: {e}")
             continue
 
-    items = [{"reference": ref, "data": d} for ref, d in zip(references, data)]
+    items = [
+        {"reference": ref, "data": d} for ref, d in zip(references, data, strict=True)
+    ]
 
     return items
 
