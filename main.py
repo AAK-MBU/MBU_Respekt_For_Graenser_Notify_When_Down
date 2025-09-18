@@ -26,13 +26,15 @@ async def populate_queue(workqueue: Workqueue):
 
     items_to_queue = retrieve_items_for_queue(logger=logger)
 
-    queue_references = set(str(r) for r in ats_functions.get_workqueue_items(workqueue))
+    queue_references = {str(r) for r in ats_functions.get_workqueue_items(workqueue)}
 
     new_items: list[dict] = []
     for item in items_to_queue:
         reference = str(item.get("reference") or "")
         if reference and reference in queue_references:
-            logger.info(f"Reference: {reference} already in queue. Item: {item} not added")
+            logger.info(
+                f"Reference: {reference} already in queue. Item: {item} not added"
+            )
         else:
             new_items.append(item)
 
@@ -60,20 +62,34 @@ async def process_workqueue(workqueue: Workqueue):
                         logger.info(f"Processing item with reference: {reference}")
                         process_item(data, reference)
 
-                        completed_state = CompletedState.completed("Process completed without exceptions")
+                        completed_state = CompletedState.completed(
+                            "Process completed without exceptions"
+                        )
                         item.complete(str(completed_state))
 
                         continue
 
                     except BusinessError as e:
-                        handle_error(error=e, log=logger.info, item=item, action=item.pending_user)
+                        handle_error(
+                            error=e,
+                            log=logger.info,
+                            item=item,
+                            action=item.pending_user,
+                        )
 
                     except Exception as e:
                         pe = ProcessError(str(e))
                         raise pe from e
 
             except ProcessError as e:
-                handle_error(error=e, log=logger.error, action=item.fail, item=item, send_mail=True, process_name=workqueue.name)
+                handle_error(
+                    error=e,
+                    log=logger.error,
+                    action=item.fail,
+                    item=item,
+                    send_mail=True,
+                    process_name=workqueue.name,
+                )
                 error_count += 1
                 reset(logger=logger)
 
@@ -97,7 +113,9 @@ async def finalize(workqueue: Workqueue):
 
     except Exception as e:
         pe = ProcessError(str(e))
-        handle_error(error=pe, log=logger.error, send_mail=True, process_name=workqueue.name)
+        handle_error(
+            error=pe, log=logger.error, send_mail=True, process_name=workqueue.name
+        )
 
         raise pe from e
 

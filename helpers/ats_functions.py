@@ -3,7 +3,6 @@
 import json
 import logging
 import os
-import sys
 
 import requests
 from automation_server_client import WorkItem, Workqueue
@@ -21,7 +20,7 @@ def get_workqueue_items(workqueue: Workqueue):
     token = os.getenv("ATS_TOKEN")
 
     if not url or not token:
-        raise EnvironmentError("ATS_URL or ATS_TOKEN is not set in the environment")
+        raise OSError("ATS_URL or ATS_TOKEN is not set in the environment")
 
     headers = {"Authorization": f"Bearer {token}"}
 
@@ -88,7 +87,7 @@ class JsonFormatter(logging.Formatter):
 
 def init_logger():
     """Initialize the root logger with JSON formatting."""
-    handler = logging.StreamHandler(sys.stdout)
+    handler = logging.StreamHandler()
     handler.setFormatter(JsonFormatter())
 
     root = logging.getLogger()

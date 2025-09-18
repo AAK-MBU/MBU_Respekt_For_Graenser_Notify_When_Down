@@ -12,9 +12,11 @@ def get_forms(logger: logging.Logger) -> list[dict] | None:
     logger.info("Fetching forms with status 'InProgress' from the database.")
 
     try:
-        db_conn = os.getenv("DBConnectionStringDev")
+        db_conn = os.getenv("DBCONNECTIONSTRINGDEV")
         if not db_conn:
-            logger.error("Database connection string is not set in environment variable 'DBConnectionStringDev'.")
+            logger.error(
+                "Database connection string is not set in environment variable 'DBCONNECTIONSTRINGDEV'."
+            )
             return None
         engine = create_engine(f"mssql+pyodbc:///?odbc_connect={quote_plus(db_conn)}")
         query = text(
