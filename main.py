@@ -106,10 +106,10 @@ if __name__ == "__main__":
 
     logging.basicConfig(
         level=logging.INFO,
-        format='[%(levelname)s] %(name)s: %(message)s',
-        handlers=[logging.StreamHandler(sys.stdout)],
+        # format='[%(levelname)s] %(name)s: %(message)s',
+        # handlers=[logging.StreamHandler(sys.stdout)],
     )
-    logging.getLogger().setLevel(logging.INFO)
+    # logging.getLogger().setLevel(logging.INFO)
 
     ats = AutomationServer.from_environment()
 
