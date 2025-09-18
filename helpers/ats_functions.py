@@ -88,7 +88,7 @@ class JsonFormatter(logging.Formatter):
 
 def init_logger():
     """Initialize the root logger with JSON formatting."""
-    handler = logging.StreamHandler(sys.stdout)
+    handler = logging.StreamHandler()
     handler.setFormatter(JsonFormatter())
 
     root = logging.getLogger()
