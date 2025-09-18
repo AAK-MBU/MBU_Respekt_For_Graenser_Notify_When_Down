@@ -24,7 +24,8 @@ def get_forms(logger: logging.Logger) -> list[dict] | None:
         )
 
         with engine.connect() as connection:
-            rows = connection.execute(query, {"status": "Failed"}).fetchall()
+            result = connection.execute(query, {"status": "Failed"})
+            rows = result.mappings().all()
 
         if not rows:
             return None
