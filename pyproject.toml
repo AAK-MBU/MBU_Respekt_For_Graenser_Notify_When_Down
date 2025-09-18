@@ -1,6 +1,6 @@
 [project]
 name = "MBU_Respekt_For_Graenser_Notify_When_Down"
-version = "0.0.8"
+version = "0.0.9"
 description = "A bot that notifies when Respekt For Graenser journalizing fails."
 readme = "README.md"
 requires-python = ">=3.13"

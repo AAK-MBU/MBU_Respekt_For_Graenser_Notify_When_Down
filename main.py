@@ -12,7 +12,7 @@ from mbu_rpa_core.process_states import CompletedState
 
 from helpers import ats_functions, config
 from processes.application_handler import close, reset, startup
-from processes.error_handling import handle_error
+from processes.error_handling import ErrorContext, handle_error
 from processes.finalize_process import finalize_process
 from processes.process_item import process_item
 from processes.queue_handler import concurrent_add, retrieve_items_for_queue
@@ -70,11 +70,16 @@ async def process_workqueue(workqueue: Workqueue):
                         continue
 
                     except BusinessError as e:
+                        context = ErrorContext(
+                            item=item,
+                            action=item.pending_user,
+                            send_mail=False,
+                            process_name=workqueue.name,
+                        )
                         handle_error(
                             error=e,
                             log=logger.info,
-                            item=item,
-                            action=item.pending_user,
+                            context=context,
                         )
 
                     except Exception as e:
@@ -82,13 +87,16 @@ async def process_workqueue(workqueue: Workqueue):
                         raise pe from e
 
             except ProcessError as e:
+                context = ErrorContext(
+                    item=item,
+                    action=item.fail,
+                    send_mail=True,
+                    process_name=workqueue.name,
+                )
                 handle_error(
                     error=e,
                     log=logger.error,
-                    action=item.fail,
-                    item=item,
-                    send_mail=True,
-                    process_name=workqueue.name,
+                    context=context,
                 )
                 error_count += 1
                 reset(logger=logger)
@@ -113,15 +121,19 @@ async def finalize(workqueue: Workqueue):
 
     except Exception as e:
         pe = ProcessError(str(e))
-        handle_error(
-            error=pe, log=logger.error, send_mail=True, process_name=workqueue.name
+        context = ErrorContext(
+            send_mail=True,
+            process_name=workqueue.name,
         )
+        handle_error(error=pe, log=logger.error, context=context)
 
         raise pe from e
 
 
 if __name__ == "__main__":
     ats_functions.init_logger()
+
+    logging.info("Process started.")
 
     ats = AutomationServer.from_environment()
 
@@ -138,4 +150,5 @@ if __name__ == "__main__":
     if "--finalize" in sys.argv:
         asyncio.run(finalize(prod_workqueue))
 
+    logging.info("Process finished.")
     sys.exit(0)
