@@ -4,25 +4,34 @@ import logging
 import os
 from urllib.parse import quote_plus
 
+from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
 
+logger = logging.getLogger(__name__)
 
-def get_forms(logger: logging.Logger) -> list[dict] | None:
+
+def get_forms() -> list[dict] | None:
     """Fetch forms with status 'Failed' from the journalizing database."""
     logger.info("Fetching forms with status 'InProgress' from the database.")
 
     try:
-        db_conn = os.getenv("DBCONNECTIONSTRINGDEV")
+        load_dotenv()
+        db_conn = os.getenv("DBCONNECTIONSTRINGPROD")
         if not db_conn:
-            logger.error(
-                "Database connection string is not set in environment variable 'DBCONNECTIONSTRINGDEV'."
-            )
+            logger.error("Error getting database connection string.")
             return None
         engine = create_engine(f"mssql+pyodbc:///?odbc_connect={quote_plus(db_conn)}")
         query = text(
-            """SELECT * FROM [RPA].[journalizing].[view_Journalizing]
-            WHERE form_type in ('respekt_for_graenser','respekt_for_graenser_privat','indmeld_kraenkelser_af_boern')
-            AND status = :status ORDER BY form_submitted_date ASC"""
+            """
+            SELECT *
+            FROM [RPA].[journalizing].[view_Journalizing]
+            WHERE status = :status
+            AND form_type in (
+                'respekt_for_graenser',
+                'respekt_for_graenser_privat',
+                'indmeld_kraenkelser_af_boern'
+            )
+            ORDER BY form_submitted_date ASC"""
         )
 
         with engine.connect() as connection:
