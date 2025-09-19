@@ -2,31 +2,33 @@
 
 import logging
 
+logger = logging.getLogger(__name__)
 
-def startup(logger: logging.Logger):
+
+def startup():
     """Function for starting applications"""
     logger.info("Starting applications...")
 
 
-def soft_close(logger: logging.Logger):
+def soft_close():
     """Function for closing applications softly"""
     logger.info("Closing applications softly...")
 
 
-def hard_close(logger: logging.Logger):
+def hard_close():
     """Function for closing applications hard"""
     logger.info("Closing applications hard...")
 
 
-def close(logger: logging.Logger):
+def close():
     """Function for closing applications softly or hardly if necessary"""
     try:
-        soft_close(logger)
+        soft_close()
     except Exception:
-        hard_close(logger)
+        hard_close()
 
 
-def reset(logger: logging.Logger):
+def reset():
     """Function for resetting application"""
-    close(logger)
-    startup(logger)
+    close()
+    startup()

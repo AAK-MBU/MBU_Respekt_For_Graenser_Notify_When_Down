@@ -1,4 +1,4 @@
-"""Module to hande queue population"""
+"""Module to handle queue population"""
 
 import asyncio
 import json
@@ -7,12 +7,14 @@ import logging
 from automation_server_client import Workqueue
 
 from helpers import config
-from processes.subprocesses.get_forms import get_forms
+from processes.subprocesses.forms_handler import get_forms
+
+logger = logging.getLogger(__name__)
 
 
-def retrieve_items_for_queue(logger: logging.Logger) -> list[dict]:
+def retrieve_items_for_queue() -> list[dict]:
     """Function to populate queue"""
-    forms = get_forms(logger=logger)
+    forms = get_forms()
 
     if forms is None:
         logger.info("No forms found")
@@ -39,9 +41,7 @@ def retrieve_items_for_queue(logger: logging.Logger) -> list[dict]:
     return items
 
 
-async def concurrent_add(
-    workqueue: Workqueue, items: list[dict], logger: logging.Logger
-) -> None:
+async def concurrent_add(workqueue: Workqueue, items: list[dict]) -> None:
     """
     Populate the workqueue with items to be processed.
     Uses concurrency and retries with exponential backoff.
