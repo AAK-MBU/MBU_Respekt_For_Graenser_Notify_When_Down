@@ -1,15 +1,16 @@
 [project]
 name = "MBU_Respekt_For_Graenser_Notify_When_Down"
-version = "0.0.9"
+version = "1.0.0"
 description = "A bot that notifies when Respekt For Graenser journalizing fails."
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "automation-server-client @ git+https://github.com/odense-rpa/automation-server-client.git",
-    "mbu-dev-shared-components>=3.0.0",
+    "mbu-dev-shared-components==4.0.3",
     "mbu-rpa-core",
     "sqlalchemy",
     "pyodbc",
+    "pillow",
 ]
 
 [tool.uv.sources]
@@ -19,13 +20,8 @@ automation-server-client = { git = "https://github.com/odense-rpa/automation-ser
 py-modules = []
 
 [tool.ruff]
-# Match your flake8 ignores
 ignore = ["E501", "E251"]
-
-# Use Python 3.13 syntax/features
 target-version = "py313"
-
-# What to lint. Ruff covers flake8 + many pylint rules.
 select = [
   "F",    # Pyflakes
   "E",    # pycodestyle errors
@@ -39,7 +35,6 @@ select = [
   "PL",   # pylint (subset)
 ]
 
-# Exclusions similar to flake8 defaults; tweak as needed.
 exclude = [
   ".git",
   ".venv",
@@ -52,7 +47,7 @@ exclude = [
 
 [tool.ruff.lint.isort]
 # Keep imports tidy and deterministic
-known-first-party = ["your_package_name"]  # <- replace with your top-level package
+# known-first-party = ["your_package_name"]  # <- replace with your top-level package
 
 # Optional: if you want Ruff to auto-fix on dev machines:
 # ruff check --fix .

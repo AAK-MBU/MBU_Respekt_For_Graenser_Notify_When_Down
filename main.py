@@ -17,14 +17,14 @@ from processes.finalize_process import finalize_process
 from processes.process_item import process_item
 from processes.queue_handler import concurrent_add, retrieve_items_for_queue
 
+logger = logging.getLogger(__name__)
+
 
 async def populate_queue(workqueue: Workqueue):
     """Populate the workqueue with items to be processed."""
-
-    logger = logging.getLogger(__name__)
     logger.info("Populating workqueue...")
 
-    items_to_queue = retrieve_items_for_queue(logger=logger)
+    items_to_queue = retrieve_items_for_queue()
 
     queue_references = {str(r) for r in ats_functions.get_workqueue_items(workqueue)}
 
@@ -45,10 +45,9 @@ async def populate_queue(workqueue: Workqueue):
 async def process_workqueue(workqueue: Workqueue):
     """Process items from the workqueue."""
 
-    logger = logging.getLogger(__name__)
     logger.info("Processing workqueue...")
 
-    startup(logger=logger)
+    startup()
 
     error_count = 0
 
@@ -99,16 +98,14 @@ async def process_workqueue(workqueue: Workqueue):
                     context=context,
                 )
                 error_count += 1
-                reset(logger=logger)
+                reset()
 
     logger.info("Finished processing workqueue.")
-    close(logger=logger)
+    close()
 
 
 async def finalize(workqueue: Workqueue):
     """Finalize process."""
-
-    logger = logging.getLogger(__name__)
 
     logger.info("Finalizing process...")
 
@@ -133,13 +130,10 @@ async def finalize(workqueue: Workqueue):
 if __name__ == "__main__":
     ats_functions.init_logger()
 
-    logging.info("Process started.")
-
     ats = AutomationServer.from_environment()
 
     prod_workqueue = ats.workqueue()
     process = ats.process
-    session = ats.session
 
     if "--queue" in sys.argv:
         asyncio.run(populate_queue(prod_workqueue))
@@ -150,5 +144,4 @@ if __name__ == "__main__":
     if "--finalize" in sys.argv:
         asyncio.run(finalize(prod_workqueue))
 
-    logging.info("Process finished.")
     sys.exit(0)
