@@ -43,6 +43,7 @@ exclude = [
   "build",
   "dist",
   "uv.lock",
+  ".env",
 ]
 
 [tool.ruff.lint.isort]
