@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 def get_forms() -> list[dict] | None:
     """Fetch forms with status 'Failed' from the journalizing database."""
-    logger.info("Fetching forms with status 'InProgress' from the database.")
+    logger.info("Fetching forms with status 'Failed' from the database.")
 
     try:
         load_dotenv()
