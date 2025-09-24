@@ -37,5 +37,5 @@ def process_item(item_data: dict, item_reference: str) -> None:
         update_form_status_in_database(form_id=item_reference, status="Failed")
 
     except Exception as e:
-        logger.error(f"Error processing item {item_reference}: {e}")
+        logger.error("Error processing item %s: %s", item_reference, e)
         raise
