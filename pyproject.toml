@@ -1,6 +1,6 @@
 [project]
 name = "MBU_Respekt_For_Graenser_Notify_When_Down"
-version = "1.0.0"
+version = "1.0.1"
 description = "A bot that notifies when Respekt For Graenser journalizing fails."
 readme = "README.md"
 requires-python = ">=3.13"
@@ -11,6 +11,7 @@ dependencies = [
     "sqlalchemy",
     "pyodbc",
     "pillow",
+    "ruff",
 ]
 
 [tool.uv.sources]
@@ -20,21 +21,7 @@ automation-server-client = { git = "https://github.com/odense-rpa/automation-ser
 py-modules = []
 
 [tool.ruff]
-ignore = ["E501", "E251"]
 target-version = "py313"
-select = [
-  "F",    # Pyflakes
-  "E",    # pycodestyle errors
-  "W",    # pycodestyle warnings
-  "I",    # isort (import sorting)
-  "UP",   # pyupgrade
-  "B",    # flake8-bugbear
-  "C4",   # flake8-comprehensions
-  "DTZ",  # enforce timezone-aware datetimes
-  "SIM",  # flake8-simplify
-  "PL",   # pylint (subset)
-]
-
 exclude = [
   ".git",
   ".venv",
@@ -46,12 +33,39 @@ exclude = [
   ".env",
 ]
 
+[tool.ruff.lint]
+ignore = ["E501", "E251"]
+select = [
+  "F",    # Pyflakes
+  "E",    # pycodestyle errors
+  "W",    # pycodestyle warnings
+  "I",    # isort (import sorting)
+  "UP",   # pyupgrade
+  "B",    # flake8-bugbear
+  "C4",   # flake8-comprehensions
+  "TC",   # flake8-type-checking
+  "ARG",  # flake8-unused-arguments
+  "DTZ",  # enforce timezone-aware datetimes
+  "SIM",  # flake8-simplify
+  "PL",   # pylint (subset)
+]
+
 [tool.ruff.lint.isort]
 # Keep imports tidy and deterministic
-# known-first-party = ["your_package_name"]  # <- replace with your top-level package
-
-# Optional: if you want Ruff to auto-fix on dev machines:
-# ruff check --fix .
+# known-first-party = ["your_package_name"]
 
 [tool.ruff.format]
 # Use the formatter; CI step already checks it with `ruff format --check .`
+
+[tool.pyright]
+include = ["."]
+exclude = [
+  "venv",
+  ".venv",
+  "build",
+  "dist",
+  "__pycache__"
+]
+pythonVersion = "3.13"
+typeCheckingMode = "basic"   # or "basic"
+reportMissingTypeStubs = true
