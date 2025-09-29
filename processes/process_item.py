@@ -34,7 +34,7 @@ def process_item(item_data: dict, item_reference: str) -> None:
 
         send_email(context=email_context)
 
-        update_form_status_in_database(form_id=item_reference, status="Failed")
+        update_form_status_in_database(form_id=item_reference, status="Manual")
 
     except Exception as e:
         logger.error("Error processing item %s: %s", item_reference, e)
