@@ -23,15 +23,35 @@ def retrieve_items_for_queue() -> list[dict]:
     data = []
     references = []
 
+    FORM_TYPE_ATTACHMENT_KEYS = {
+        "respekt_for_graenser": "re",
+        "respekt_for_graenser_privat": "re",
+        "indmeld_kraenkelser_af_boern": "respekt_for",
+    }
+
     for form in forms:
         form_id = form.get("form_id")
+        form_type = form.get("form_type")
         try:
             form_data = json.loads(form.get("form_data", "{}"))
-            attachment_url = form_data["data"]["attachments"]["respekt_for"]["url"]
+            attachment_key = FORM_TYPE_ATTACHMENT_KEYS.get(form_type)
+
+            if not attachment_key:
+                logger.warning(
+                    "Unknown form_type '%s' for form_id %s", form_type, form_id
+                )
+                continue
+
+            attachment_url = form_data["data"]["attachments"][attachment_key]["url"]
             references.append(form_id)
             data.append({"attachment_url": attachment_url})
         except (json.JSONDecodeError, KeyError, TypeError) as e:
-            logger.warning(f"Error parsing form data for form_id {form_id}: {e}")
+            logger.warning(
+                "Error parsing form data for form_id %s (type: %s): %s",
+                form_id,
+                form_type,
+                e,
+            )
             continue
 
     items = [
