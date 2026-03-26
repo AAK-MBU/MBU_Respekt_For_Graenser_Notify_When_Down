@@ -5,7 +5,7 @@ import os
 from urllib.parse import quote_plus
 
 from dotenv import load_dotenv
-from sqlalchemy import create_engine, text
+from sqlalchemy import bindparam, create_engine, text
 
 logger = logging.getLogger(__name__)
 
@@ -25,17 +25,36 @@ def get_forms() -> list[dict] | None:
             """
             SELECT *
             FROM [RPA].[journalizing].[view_Journalizing]
-            WHERE status = :status
+            WHERE (
+                status = :status
+                OR (
+                    status NOT IN :or_status
+                    AND DATEDIFF(MINUTE, form_submitted_date, GETDATE()) > 30
+                    AND documented_date IS NULL
+                )
+            )
             AND form_type in (
                 'respekt_for_graenser',
                 'respekt_for_graenser_privat',
                 'indmeld_kraenkelser_af_boern'
             )
-            ORDER BY form_submitted_date ASC"""
-        )
+            ORDER BY form_submitted_date ASC
+            """
+        ).bindparams(bindparam("or_status", expanding=True))
 
         with engine.connect() as connection:
-            result = connection.execute(query, {"status": "Failed"})
+            result = connection.execute(
+                query,
+                {
+                    "status": "Failed",
+                    "or_status": [
+                        "Successful",
+                        "Failed",
+                        "Manuel",
+                        "Manual",
+                    ],
+                },
+            )
             rows = result.mappings().all()
 
         if not rows:
